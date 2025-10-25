@@ -2,6 +2,7 @@ package seeder
 
 import (
 	"log"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -23,7 +24,20 @@ func Seed() {
 		log.Fatalf("failed to hash password: %v", err)
 	}
 
-	user := models.User{Username: "admin", PasswordHash: string(pw)}
+	now := time.Now()
+
+	user := models.User{
+		Code:         "USR-1",
+		Username:     "admin",
+		PasswordHash: string(pw),
+		Email:        "admin@example.com",
+		CreatedBy:    0,
+		UpdatedBy:    0,
+		CreatedAt:    now,
+		UpdatedAt:    now,
+		Status:       "active",
+	}
+
 	if err := config.DB.Create(&user).Error; err != nil {
 		log.Fatalf("seeder create user failed: %v", err)
 	}
