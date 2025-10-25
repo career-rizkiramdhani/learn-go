@@ -3,33 +3,34 @@ package router
 import (
 	"net/http"
 
+	"crud/dto"
+	"crud/service"
+
 	"github.com/labstack/echo/v4"
 )
 
 func InitRoutes(e *echo.Echo) {
-	e.GET("/", func(c echo.Context) error {
+	// Group all routes under /api
+	g := e.Group("/api")
+
+	g.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	// baru: route untuk signin
-	e.POST("/signin", signInHandler)
-}
-
-type signInRequest struct {
-	Username string `json:"username" form:"username"`
-	Password string `json:"password" form:"password"`
+	// route untuk signin menggunakan service
+	g.POST("/signin", signInHandler)
 }
 
 func signInHandler(c echo.Context) error {
-	var req signInRequest
+	var req dto.SignInRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
 	}
 
-	// contoh validasi sederhana
-	if req.Username == "admin" && req.Password == "password" {
-		return c.JSON(http.StatusOK, map[string]string{"token": "dummy-token"})
+	token, err := service.Authenticate(req.Username, req.Password)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
 	}
 
-	return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
+	return c.JSON(http.StatusOK, dto.SignInResponse{Token: token})
 }
