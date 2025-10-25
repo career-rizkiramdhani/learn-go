@@ -2,9 +2,11 @@ package config
 
 import (
 	"log"
-	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
+
+	"crud/utils"
 )
 
 type Config struct {
@@ -19,6 +21,9 @@ type Config struct {
 	UseTLS   string
 	CertFile string
 	KeyFile  string
+
+	// JWT expiration in hours (integer)
+	JWTExpiredHours int
 }
 
 var Cfg Config
@@ -30,29 +35,33 @@ func InitConfig() {
 	}
 
 	// Prefer full DATABASE_URL
-	Cfg.DatabaseURL = getEnv("DATABASE_URL", "")
+	Cfg.DatabaseURL = utils.GetEnv("DATABASE_URL", "")
 	if Cfg.DatabaseURL == "" {
 		// Build DSN from components if DATABASE_URL not provided
-		host := getEnv("POSTGRES_HOST", "localhost")
-		port := getEnv("POSTGRES_PORT", "5432")
-		user := getEnv("POSTGRES_USER", "postgres")
-		pass := getEnv("POSTGRES_PASSWORD", "")
-		dbname := getEnv("POSTGRES_DB", "appdb")
-		sslmode := getEnv("POSTGRES_SSLMODE", "disable")
+		host := utils.GetEnv("POSTGRES_HOST", "localhost")
+		port := utils.GetEnv("POSTGRES_PORT", "5432")
+		user := utils.GetEnv("POSTGRES_USER", "postgres")
+		pass := utils.GetEnv("POSTGRES_PASSWORD", "")
+		dbname := utils.GetEnv("POSTGRES_DB", "appdb")
+		sslmode := utils.GetEnv("POSTGRES_SSLMODE", "disable")
 
 		Cfg.DatabaseURL = "host=" + host + " port=" + port + " user=" + user + " password=" + pass + " dbname=" + dbname + " sslmode=" + sslmode
 	}
 
-	Cfg.JWTSecret = getEnv("JWT_SECRET", "secret")
-	Cfg.Port = getEnv("PORT", "8080")
-	Cfg.UseTLS = getEnv("USE_TLS", "false")
-	Cfg.CertFile = getEnv("CERT_FILE", "cert.pem")
-	Cfg.KeyFile = getEnv("KEY_FILE", "key.pem")
-}
+	Cfg.JWTSecret = utils.GetEnv("JWT_SECRET", "secret")
+	Cfg.Port = utils.GetEnv("PORT", "8080")
+	Cfg.UseTLS = utils.GetEnv("USE_TLS", "false")
+	Cfg.CertFile = utils.GetEnv("CERT_FILE", "cert.pem")
+	Cfg.KeyFile = utils.GetEnv("KEY_FILE", "key.pem")
 
-func getEnv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
+	// JWT_EXPIRED: expiration in hours (default 72)
+	if v := utils.GetEnv("JWT_EXPIRED", "72"); v != "" {
+		if h, err := strconv.Atoi(v); err == nil {
+			Cfg.JWTExpiredHours = h
+		} else {
+			Cfg.JWTExpiredHours = 72
+		}
+	} else {
+		Cfg.JWTExpiredHours = 72
 	}
-	return fallback
 }
