@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"crud/config"
 	"crud/migration"
 	"crud/router"
@@ -11,6 +14,32 @@ import (
 )
 
 func main() {
+	// Support simple CLI commands: rollback, migrate, migrate:fresh
+	if len(os.Args) > 1 {
+		cmd := os.Args[1]
+		config.InitConfig()
+		config.InitDB()
+		switch cmd {
+		case "rollback":
+			migration.RollbackAll()
+			log.Println("rollback completed")
+			return
+		case "migrate":
+			migration.RunMigrations()
+			log.Println("migrate completed")
+			return
+		case "migrate:fresh":
+			migration.RollbackAll()
+			migration.RunMigrations()
+			seeder.Seed()
+			log.Println("migrate:fresh completed")
+			return
+		default:
+			log.Printf("unknown command: %s\n", cmd)
+			return
+		}
+	}
+
 	config.InitConfig()
 	config.InitDB()
 	migration.RunMigrations()

@@ -25,7 +25,7 @@ func Authenticate(username, password string) (string, error) {
 	claims := jwt.MapClaims{
 		"sub":      user.ID,
 		"username": user.Username,
-		"exp":      time.Now().Add(72 * time.Hour).Unix(),
+		"exp":      time.Now().Add(time.Duration(config.Cfg.JWTExpiredHours) * time.Hour).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
