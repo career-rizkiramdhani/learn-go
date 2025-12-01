@@ -1,13 +1,62 @@
 package main
 
 import (
+	"log"
+	"os"
+
+	"crud/config"
+	"crud/migration"
 	"crud/router"
+	"crud/seeder"
+	"crud/tlsutil"
 
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	// Support simple CLI commands: rollback, migrate, migrate:fresh
+	if len(os.Args) > 1 {
+		cmd := os.Args[1]
+		config.InitConfig()
+		config.InitDB()
+		switch cmd {
+		case "rollback":
+			migration.RollbackAll()
+			log.Println("rollback completed")
+			return
+		case "migrate":
+			migration.RunMigrations()
+			log.Println("migrate completed")
+			return
+		case "migrate:fresh":
+			migration.RollbackAll()
+			migration.RunMigrations()
+			seeder.Seed()
+			log.Println("migrate:fresh completed")
+			return
+		default:
+			log.Printf("unknown command: %s\n", cmd)
+			return
+		}
+	}
+
+	config.InitConfig()
+	config.InitDB()
+	migration.RunMigrations()
+	seeder.Seed()
+
 	e := echo.New()
 	router.InitRoutes(e)
-	e.Logger.Fatal(e.Start(":8080"))
+	// If TLS is enabled in config, start with TLS; otherwise start plain HTTP.
+	if config.Cfg.UseTLS {
+		// Ensure certificate files exist (generate self-signed if missing)
+		if err := tlsutil.EnsureCert(config.Cfg.CertFile, config.Cfg.KeyFile); err != nil {
+			e.Logger.Fatalf("failed to ensure TLS cert: %v", err)
+		}
+		e.Logger.Infof("starting server with TLS on :%s", config.Cfg.Port)
+		e.Logger.Fatal(e.StartTLS(":"+config.Cfg.Port, config.Cfg.CertFile, config.Cfg.KeyFile))
+	} else {
+		e.Logger.Infof("starting server on :%s", config.Cfg.Port)
+		e.Logger.Fatal(e.Start(":" + config.Cfg.Port))
+	}
 }
