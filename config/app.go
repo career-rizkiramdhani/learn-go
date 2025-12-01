@@ -16,9 +16,9 @@ type Config struct {
 	JWTSecret   string
 	Port        string
 
-	// TLS settings (optional). When USE_TLS=true and cert/key are provided,
+	// TLS settings (optional). When UseTLS=true and cert/key are provided,
 	// main will start the server with TLS.
-	UseTLS   string
+	UseTLS   bool
 	CertFile string
 	KeyFile  string
 
@@ -50,7 +50,10 @@ func InitConfig() {
 
 	Cfg.JWTSecret = utils.GetEnv("JWT_SECRET", "secret")
 	Cfg.Port = utils.GetEnv("PORT", "8080")
-	Cfg.UseTLS = utils.GetEnv("USE_TLS", "false")
+
+	if utils.GetEnv("USE_TLS", "false") == "true" {
+		Cfg.UseTLS = true
+	}
 	Cfg.CertFile = utils.GetEnv("CERT_FILE", "cert.pem")
 	Cfg.KeyFile = utils.GetEnv("KEY_FILE", "key.pem")
 

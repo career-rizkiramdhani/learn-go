@@ -48,7 +48,7 @@ func main() {
 	e := echo.New()
 	router.InitRoutes(e)
 	// If TLS is enabled in config, start with TLS; otherwise start plain HTTP.
-	if config.Cfg.UseTLS == "true" {
+	if config.Cfg.UseTLS {
 		// Ensure certificate files exist (generate self-signed if missing)
 		if err := tlsutil.EnsureCert(config.Cfg.CertFile, config.Cfg.KeyFile); err != nil {
 			e.Logger.Fatalf("failed to ensure TLS cert: %v", err)
