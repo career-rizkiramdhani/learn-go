@@ -1,0 +1,17 @@
+# Configuration for https://github.com/cosmtrek/air
+# Watches go files and rebuilds + restarts the binary on changes.
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # build command that produces the binary used during reload
+  cmd = "go build -o tmp/main ."
+  # path to the binary
+  bin = "tmp/main"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["vendor", "tmp", ".git"]
+  # delay in ms before restart after changes
+  delay = 500
+
+[log]
+  time = true

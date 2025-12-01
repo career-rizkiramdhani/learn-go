@@ -119,6 +119,37 @@ Catatan penting: rollback menghapus data. Gunakan dengan hati-hati.
 1. Tambahkan case baru pada bagian CLI di `main.go`.
 2. Implementasikan logika di package yang sesuai (mis. `migration`, `seeder`, `tools`).
 
+## Development: automatic reload (auto-restart on code changes)
+
+Untuk pengalaman pengembangan lebih cepat, gunakan `air` (https://github.com/cosmtrek/air) untuk otomatis rebuild dan restart server saat file `.go` berubah.
+
+Instalasi (macOS / Linux):
+
+```bash
+# menggunakan go install (direkomendasikan)
+go install github.com/cosmtrek/air@latest
+
+# atau via Homebrew (macOS)
+brew install air
+```
+
+Setelah terinstall, dari root project jalankan:
+
+```bash
+make dev
+```
+
+atau langsung:
+
+```bash
+air
+```
+
+Konfigurasi `air` ada di file `.air.toml` (sudah termasuk di repo). Default config akan membangun binary ke `tmp/main` dan menjalankannya; saat Anda mengubah file `.go` config akan rebuild dan restart server.
+
+Jika Anda tidak ingin menginstall `air`, alternatif yang lebih ringan adalah `reflex` atau `CompileDaemon`.
+
+
 Contoh menambah perintah `export:users`:
 
 ```go
