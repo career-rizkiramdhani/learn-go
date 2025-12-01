@@ -11,15 +11,15 @@ import (
 	"crud/models"
 )
 
-// Authenticate checks username/password and returns a signed JWT when valid
-func Authenticate(username, password string) (string, error) {
+// Authenticate checks username/password and returns the user and a signed JWT when valid
+func Authenticate(username, password string) (*models.User, string, error) {
 	var user models.User
 	if err := config.DB.Where("username = ?", username).First(&user).Error; err != nil {
-		return "", errors.New("invalid credentials")
+		return nil, "", errors.New("invalid credentials")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return "", errors.New("invalid credentials")
+		return nil, "", errors.New("invalid credentials")
 	}
 
 	claims := jwt.MapClaims{
@@ -31,8 +31,8 @@ func Authenticate(username, password string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString([]byte(config.Cfg.JWTSecret))
 	if err != nil {
-		return "", err
+		return nil, "", err
 	}
 
-	return signed, nil
+	return &user, signed, nil
 }
