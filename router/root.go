@@ -18,4 +18,11 @@ func InitRoutes(e *echo.Echo) {
 
 	// route untuk signin menggunakan service
 	g.POST("/signin", handler.SignIn)
+
+	// User CRUD
+	g.POST("/users", handler.CreateUser)
+	g.GET("/users", handler.ListUsers)
+	g.GET("/users/:id", handler.GetUser)
+	g.PUT("/users/:id", handler.UpdateUser)
+	g.DELETE("/users/:id", handler.DeleteUser)
 }
