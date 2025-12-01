@@ -8,6 +8,7 @@ import (
 
 	"crud/config"
 	"crud/models"
+	"crud/service"
 )
 
 // Seed creates initial data (admin user) if none exists
@@ -27,7 +28,7 @@ func Seed() {
 	now := time.Now()
 
 	user := models.User{
-		Code:         "USR-1",
+		Code:         service.GenerateUserCode(),
 		Username:     "admin",
 		PasswordHash: string(pw),
 		Email:        "admin@example.com",
