@@ -7,18 +7,15 @@ import (
 )
 
 // GenerateCode returns a unique code for a given module.
-// It uses a module-specific prefix (if known), the current date (YYYYMMDD)
-// and the current Unix time in milliseconds to ensure uniqueness.
-// Example for module "user": GO_USR_20251201412512345
-func GenerateCode(module string) string {
+// Caller may provide a `prefix` (e.g. "GO_USR_"). If `prefix` is empty,
+// a default prefix `GO_<UPPERSHORT>_` will be used where <UPPERSHORT>
+// is the module name uppercased and truncated to 3 chars.
+// The generated format is: <PREFIX><YYYYMMDD><unix-milliseconds>
+// Example: GO_USR_20251201<ms>
+func GenerateCode(module, prefix string) string {
 	m := strings.ToLower(strings.TrimSpace(module))
 
-	prefixes := map[string]string{
-		"user": "GO_USR_",
-	}
-
-	prefix, ok := prefixes[m]
-	if !ok {
+	if strings.TrimSpace(prefix) == "" {
 		// default prefix: GO_<UPPER_MODULE>_
 		up := strings.ToUpper(m)
 		if len(up) > 3 {
@@ -34,7 +31,7 @@ func GenerateCode(module string) string {
 	return fmt.Sprintf("%s%s%d", prefix, date, ts)
 }
 
-// GenerateUserCode is a convenience wrapper for the user module.
-func GenerateUserCode() string {
-	return GenerateCode("user")
+// GenerateUserCode is a convenience wrapper for the user module that accepts a prefix.
+func GenerateUserCode(prefix string) string {
+	return GenerateCode("user", prefix)
 }

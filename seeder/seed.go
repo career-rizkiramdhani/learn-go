@@ -28,7 +28,7 @@ func Seed() {
 	now := time.Now()
 
 	user := models.User{
-		Code:         service.GenerateUserCode(),
+		Code:         service.GenerateUserCode("GO_USR_"),
 		Username:     "admin",
 		PasswordHash: string(pw),
 		Email:        "admin@example.com",
