@@ -53,3 +53,30 @@ List users:
 ```bash
 curl http://localhost:8080/api/users?page=1&size=10
 ```
+
+Protected endpoints
+
+The following endpoints are protected by JWT and require the client to send an `Authorization: Bearer <token>` header.
+
+- `POST /api/logout` — revoke session (stateless: client may drop token)
+- `GET /api/users` — list users (requires authentication)
+- `GET /api/users/:id` — get user by id
+- `PUT /api/users/:id` — update user
+- `DELETE /api/users/:id` — delete user
+
+Accessing authenticated user in handlers
+
+Handlers can obtain the authenticated user's id and claims from the Echo context. The middleware sets `user_id` (uint64) and `user_claims` (JWT claims map).
+
+Example (in handler):
+
+```go
+uidVal := c.Get("user_id")
+if uidVal == nil {
+  // not authenticated (shouldn't happen when middleware applied)
+}
+uid := uidVal.(uint64)
+// use uid as needed
+```
+
+You can add a small helper in `middleware` to retrieve the user id safely, for example `GetUserID(c echo.Context) (uint64, bool)`.
