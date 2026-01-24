@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"crud/handler"
+	"crud/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +19,6 @@ func InitRoutes(e *echo.Echo) {
 
 	// route untuk signin menggunakan service
 	g.POST("/signin", handler.SignIn)
-	g.POST("/logout", handler.Logout)
 
 	// User CRUD
 	g.POST("/users", handler.CreateUser)
@@ -26,4 +26,14 @@ func InitRoutes(e *echo.Echo) {
 	g.GET("/users/:id", handler.GetUser)
 	g.PUT("/users/:id", handler.UpdateUser)
 	g.DELETE("/users/:id", handler.DeleteUser)
+
+	// protected routes (require JWT)
+	pg := g.Group("")
+	pg.Use(middleware.JWTMiddleware)
+
+	pg.POST("/logout", handler.Logout)
+	pg.GET("/users", handler.ListUsers)
+	pg.GET("/users/:id", handler.GetUser)
+	pg.PUT("/users/:id", handler.UpdateUser)
+	pg.DELETE("/users/:id", handler.DeleteUser)
 }
