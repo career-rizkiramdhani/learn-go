@@ -18,6 +18,7 @@ func InitRoutes(e *echo.Echo) {
 
 	// route untuk signin menggunakan service
 	g.POST("/signin", handler.SignIn)
+	g.POST("/logout", handler.Logout)
 
 	// User CRUD
 	g.POST("/users", handler.CreateUser)

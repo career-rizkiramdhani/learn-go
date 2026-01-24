@@ -20,6 +20,7 @@ type User struct {
 type Repository interface {
 	Save(u *User) error
 	FindByID(id uint) (*User, error)
+	FindByUsername(username string) (*User, error)
 	Delete(id uint) error
 	CountByUsernameOrEmail(username, email string) (int64, error)
 	List(offset, limit int) ([]User, int64, error)

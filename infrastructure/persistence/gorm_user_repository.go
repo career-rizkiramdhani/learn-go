@@ -54,6 +54,25 @@ func (r *GormUserRepository) FindByID(id uint) (*userdomain.User, error) {
 	}, nil
 }
 
+func (r *GormUserRepository) FindByUsername(username string) (*userdomain.User, error) {
+	var m models.User
+	if err := config.DB.Where("username = ?", username).First(&m).Error; err != nil {
+		return nil, err
+	}
+	return &userdomain.User{
+		ID:        m.ID,
+		Code:      m.Code,
+		Username:  m.Username,
+		Password:  m.PasswordHash,
+		Email:     m.Email,
+		CreatedBy: m.CreatedBy,
+		UpdatedBy: m.UpdatedBy,
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
+		Status:    m.Status,
+	}, nil
+}
+
 func (r *GormUserRepository) Delete(id uint) error {
 	if err := config.DB.Delete(&models.User{}, id).Error; err != nil {
 		return err
