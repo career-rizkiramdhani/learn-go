@@ -1,8 +1,8 @@
-# Project: Go JWT API
+# Project: REST API Service — Ticket Booking
 
 ## Project Overview
 
-This project is a Go-based RESTful API that uses the Echo framework for routing and GORM as an ORM for interacting with a PostgreSQL database. The API provides user authentication using JSON Web Tokens (JWT) and includes a command-line interface for database migrations and seeding. It also supports TLS for secure communication.
+This project is a Go-based RESTful API Service for Ticket Booking. It provides endpoints to manage events, availability, bookings, users and authentication. The codebase uses the Echo framework for routing and GORM as an ORM for interacting with a PostgreSQL database. The service includes a command-line interface for database migrations and seeding, and supports TLS for secure communication.
 
 ## Building and Running
 
