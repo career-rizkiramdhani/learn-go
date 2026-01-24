@@ -112,5 +112,6 @@ The project maintains per-module context files under the `docs/` folder. See the
 - `docs/service.md` — legacy services (pre-DDD)
 - `docs/tlsutil.md` — TLS helpers
 - `docs/utils.md` — utility helpers
+- `docs/user.md` — user module: domain, application, infrastructure, handlers (CRUD)
 
 Use these files as the canonical per-module context for tools that read `GEMINI.md`.
