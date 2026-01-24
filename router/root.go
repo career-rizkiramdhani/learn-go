@@ -29,7 +29,7 @@ func InitRoutes(e *echo.Echo) {
 
 	// protected routes (require JWT)
 	pg := g.Group("")
-	pg.Use(middleware.JWTMiddleware)
+	pg.Use(middleware.RequireAuth)
 
 	pg.POST("/logout", handler.Logout)
 	pg.GET("/users", handler.ListUsers)
