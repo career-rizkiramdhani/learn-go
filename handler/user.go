@@ -5,8 +5,8 @@ import (
 	"net/mail"
 	"strconv"
 
+	userapp "crud/application/user"
 	"crud/dto"
-	"crud/service"
 
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +30,7 @@ func CreateUser(c echo.Context) error {
 	}
 
 	// for now createdBy is 0 (system) — can be replaced with auth user ID later
-	user, err := service.CreateUser(req.Username, req.Password, req.Email, "GO_USR_", 0)
+	user, err := userapp.CreateUser(req.Username, req.Password, req.Email, "GO_USR_", 0)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
@@ -56,7 +56,7 @@ func GetUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
 	}
 
-	user, err := service.GetUserByID(uint(id64))
+	user, err := userapp.GetUserByID(uint(id64))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "user not found"})
 	}
@@ -97,7 +97,7 @@ func UpdateUser(c echo.Context) error {
 		}
 	}
 
-	user, err := service.UpdateUser(uint(id64), req.Username, req.Password, req.Email, req.Status, 0)
+	user, err := userapp.UpdateUser(uint(id64), req.Username, req.Password, req.Email, req.Status, 0)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
@@ -123,7 +123,7 @@ func DeleteUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
 	}
 
-	if err := service.DeleteUser(uint(id64)); err != nil {
+	if err := userapp.DeleteUser(uint(id64)); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
@@ -146,7 +146,7 @@ func ListUsers(c echo.Context) error {
 		}
 	}
 
-	users, total, err := service.ListUsers(page, size)
+	users, total, err := userapp.ListUsers(page, size)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
